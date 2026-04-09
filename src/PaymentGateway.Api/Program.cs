@@ -10,6 +10,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<PaymentsRepository>();
+builder.Services.AddScoped<PaymentService>();
+
+builder.Services.AddHttpClient<IBankClient, BankClient>(client =>
+{
+    string baseUrl = builder.Configuration["BankSimulator:BaseUrl"] ?? "http://localhost:8080";
+    client.BaseAddress = new Uri(baseUrl);
+});
 
 var app = builder.Build();
 

@@ -1,0 +1,313 @@
+{
+  "info": {
+    "name": "CKO2 Payment Gateway",
+    "description": "Payment Gateway API - Code Challenge",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://localhost:7092"
+    },
+    {
+      "key": "paymentId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "POST - Authorized (odd digit)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Payment is Authorized', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.status).to.eql('Authorized');",
+              "    pm.expect(body.cardNumberLastFour).to.eql(8877);",
+              "});",
+              "const body = pm.response.json();",
+              "pm.collectionVariables.set('paymentId', body.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cardNumber\": \"2222405343248877\",\n  \"expiryMonth\": 4,\n  \"expiryYear\": 2027,\n  \"currency\": \"GBP\",\n  \"amount\": 100,\n  \"cvv\": \"123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/Payments",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "Payments"]
+        }
+      }
+    },
+    {
+      "name": "POST - Declined (even digit)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Payment is Declined', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.status).to.eql('Declined');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cardNumber\": \"2222405343248878\",\n  \"expiryMonth\": 4,\n  \"expiryYear\": 2027,\n  \"currency\": \"EUR\",\n  \"amount\": 500,\n  \"cvv\": \"456\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/Payments",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "Payments"]
+        }
+      }
+    },
+    {
+      "name": "POST - Declined (bank error, digit 0)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Payment is Declined', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.status).to.eql('Declined');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cardNumber\": \"2222405343248870\",\n  \"expiryMonth\": 6,\n  \"expiryYear\": 2027,\n  \"currency\": \"BRL\",\n  \"amount\": 1050,\n  \"cvv\": \"789\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/Payments",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "Payments"]
+        }
+      }
+    },
+    {
+      "name": "POST - Rejected (card too short)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+              "pm.test('Payment is Rejected', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.status).to.eql('Rejected');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cardNumber\": \"123456789\",\n  \"expiryMonth\": 4,\n  \"expiryYear\": 2027,\n  \"currency\": \"GBP\",\n  \"amount\": 100,\n  \"cvv\": \"123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/Payments",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "Payments"]
+        }
+      }
+    },
+    {
+      "name": "POST - Rejected (expired card)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+              "pm.test('Payment is Rejected', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.status).to.eql('Rejected');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cardNumber\": \"2222405343248877\",\n  \"expiryMonth\": 1,\n  \"expiryYear\": 2020,\n  \"currency\": \"GBP\",\n  \"amount\": 100,\n  \"cvv\": \"123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/Payments",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "Payments"]
+        }
+      }
+    },
+    {
+      "name": "POST - Rejected (invalid currency)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cardNumber\": \"2222405343248877\",\n  \"expiryMonth\": 4,\n  \"expiryYear\": 2027,\n  \"currency\": \"XYZ\",\n  \"amount\": 100,\n  \"cvv\": \"123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/Payments",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "Payments"]
+        }
+      }
+    },
+    {
+      "name": "POST - Rejected (non-numeric CVV)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cardNumber\": \"2222405343248877\",\n  \"expiryMonth\": 4,\n  \"expiryYear\": 2027,\n  \"currency\": \"GBP\",\n  \"amount\": 100,\n  \"cvv\": \"ABC\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/Payments",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "Payments"]
+        }
+      }
+    },
+    {
+      "name": "POST - Rejected (zero amount)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cardNumber\": \"2222405343248877\",\n  \"expiryMonth\": 4,\n  \"expiryYear\": 2027,\n  \"currency\": \"GBP\",\n  \"amount\": 0,\n  \"cvv\": \"123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/Payments",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "Payments"]
+        }
+      }
+    },
+    {
+      "name": "GET - Retrieve payment",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Has masked card number', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.cardNumberLastFour).to.be.a('number');",
+              "    pm.expect(body.id).to.eql(pm.collectionVariables.get('paymentId'));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/Payments/{{paymentId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "Payments", "{{paymentId}}"]
+        }
+      }
+    },
+    {
+      "name": "GET - Payment not found (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/Payments/00000000-0000-0000-0000-000000000000",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "Payments", "00000000-0000-0000-0000-000000000000"]
+        }
+      }
+    }
+  ]
+}
