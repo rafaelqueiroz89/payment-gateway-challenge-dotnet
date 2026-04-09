@@ -1,3 +1,5 @@
+using PaymentGateway.Api.ExternalClients;
+using PaymentGateway.Api.Repositories;
 using PaymentGateway.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<PaymentsRepository>();
-builder.Services.AddScoped<PaymentService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 builder.Services.AddHttpClient<IBankClient, BankClient>(client =>
 {

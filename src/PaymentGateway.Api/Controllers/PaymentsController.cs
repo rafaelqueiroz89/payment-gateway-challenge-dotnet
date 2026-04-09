@@ -10,9 +10,9 @@ namespace PaymentGateway.Api.Controllers;
 [ApiController]
 public class PaymentsController : Controller
 {
-    private readonly PaymentService _paymentService;
+    private readonly IPaymentService _paymentService;
 
-    public PaymentsController(PaymentService paymentService)
+    public PaymentsController(IPaymentService paymentService)
     {
         _paymentService = paymentService;
     }
