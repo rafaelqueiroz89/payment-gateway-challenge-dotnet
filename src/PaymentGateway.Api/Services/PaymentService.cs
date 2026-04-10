@@ -25,14 +25,14 @@ public class PaymentService : IPaymentService
         return _paymentsRepository.Get(id);
     }
 
-    public async Task<PostPaymentResponse?> ProcessPaymentAsync(PostPaymentRequest request)
+    public async Task<PaymentResult> ProcessPaymentAsync(PostPaymentRequest request)
     {
         IReadOnlyList<string> validationErrors = PaymentValidator.Validate(request);
 
         if (validationErrors.Count > 0)
         {
             _logger.LogWarning("Payment validation failed: {Errors}", string.Join(", ", validationErrors));
-            return null;
+            return new PaymentResult { Errors = validationErrors };
         }
 
         BankPaymentRequest bankRequest = new()
@@ -75,6 +75,6 @@ public class PaymentService : IPaymentService
 
         _logger.LogInformation("Payment {PaymentId} processed with status {Status}", response.Id, status);
 
-        return response;
+        return new PaymentResult { Payment = response };
     }
 }

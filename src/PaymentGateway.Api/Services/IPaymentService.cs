@@ -6,5 +6,5 @@ namespace PaymentGateway.Api.Services;
 public interface IPaymentService
 {
     PostPaymentResponse? GetPayment(Guid id);
-    Task<PostPaymentResponse?> ProcessPaymentAsync(PostPaymentRequest request);
+    Task<PaymentResult> ProcessPaymentAsync(PostPaymentRequest request);
 }

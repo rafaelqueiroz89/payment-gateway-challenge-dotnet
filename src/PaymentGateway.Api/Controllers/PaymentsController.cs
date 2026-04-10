@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 using PaymentGateway.Api.Models.Requests;
 using PaymentGateway.Api.Models.Responses;
@@ -33,13 +34,18 @@ public class PaymentsController : Controller
     [HttpPost]
     public async Task<ActionResult<PostPaymentResponse>> PostPaymentAsync(PostPaymentRequest request)
     {
-        PostPaymentResponse? response = await _paymentService.ProcessPaymentAsync(request);
+        PaymentResult result = await _paymentService.ProcessPaymentAsync(request);
 
-        if (response == null)
+        if (!result.IsValid)
         {
-            return BadRequest();
+            ModelStateDictionary modelState = new();
+            foreach (string error in result.Errors!)
+            {
+                modelState.AddModelError("Validation", error);
+            }
+            return ValidationProblem(modelState);
         }
 
-        return Ok(response);
+        return Ok(result.Payment);
     }
 }
