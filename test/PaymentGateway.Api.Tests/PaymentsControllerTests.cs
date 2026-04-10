@@ -428,7 +428,7 @@ public class PaymentsControllerTests
         };
     }
 
-    private static HttpClient CreateClient(PaymentsRepository repository, IBankClient bankClient)
+    private static HttpClient CreateClient(IPaymentsRepository repository, IBankClient bankClient)
     {
         WebApplicationFactory<PaymentsController> webApplicationFactory = new();
         return webApplicationFactory.WithWebHostBuilder(builder =>

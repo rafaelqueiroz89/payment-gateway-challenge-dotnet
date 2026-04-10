@@ -8,11 +8,11 @@ namespace PaymentGateway.Api.Services;
 
 public class PaymentService : IPaymentService
 {
-    private readonly PaymentsRepository _paymentsRepository;
+    private readonly IPaymentsRepository _paymentsRepository;
     private readonly IBankClient _bankClient;
     private readonly ILogger<PaymentService> _logger;
 
-    public PaymentService(PaymentsRepository paymentsRepository, IBankClient bankClient, ILogger<PaymentService> logger)
+    public PaymentService(IPaymentsRepository paymentsRepository, IBankClient bankClient, ILogger<PaymentService> logger)
     {
         _paymentsRepository = paymentsRepository;
         _bankClient = bankClient;
@@ -44,7 +44,17 @@ public class PaymentService : IPaymentService
             Cvv = request.Cvv
         };
 
-        BankPaymentResponse? bankResponse = await _bankClient.ProcessPaymentAsync(bankRequest);
+        BankPaymentResponse? bankResponse;
+
+        try
+        {
+            bankResponse = await _bankClient.ProcessPaymentAsync(bankRequest);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Bank communication error");
+            bankResponse = null;
+        }
 
         PaymentStatus status = bankResponse is { Authorized: true }
             ? PaymentStatus.Authorized
